@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { CandidateList } from '../components/CandidateList';
 import { FilterBar } from '../components/FilterBar';
+import { RecentActivity } from '../components/RecentActivity';
 import { ResumeUpload } from '../components/ResumeUpload';
 import { EmptyState } from '../components/ui/EmptyState';
 import { api } from '../services/api';
@@ -89,7 +90,10 @@ export function JobDetailsPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
       <section className="rounded-3xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-violet-300">Job details</p>
+        <Link to="/jobs" className="inline-flex items-center text-sm font-medium text-violet-300 transition hover:text-violet-200">
+          ← Back to jobs
+        </Link>
+        <p className="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-violet-300">Job details</p>
         {job ? (
           <>
             <h1 className="mt-3 text-4xl font-semibold text-white">{job.title}</h1>
@@ -101,7 +105,10 @@ export function JobDetailsPage() {
       </section>
 
       <section className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-        <ResumeUpload jobId={selectedJobId} onUploaded={() => void loadCandidates()} />
+        <div className="space-y-4">
+          <ResumeUpload jobId={selectedJobId} onUploaded={() => void loadCandidates()} />
+          <RecentActivity candidates={candidates.map((item) => ({ id: item.candidate.id, name: item.candidate.name, status: item.candidate.status, created_at: item.candidate.created_at }))} />
+        </div>
 
         <div className="space-y-4">
           <FilterBar

@@ -1,0 +1,123 @@
+/* Container Layout */
+.home-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem; /* 6xl */
+  min-height: 100vh;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .home-container {
+    padding: 2.5rem;
+  }
+}
+
+/* Hero Section */
+.hero-card {
+  border-radius: 1.5rem;
+  border: 1px solid #1e293b; /* slate-800 */
+  background-color: rgba(15, 23, 42, 0.7); /* slate-900/70 */
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #c4b5fd; /* violet-300 */
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.title {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 3rem;
+  }
+}
+
+.description {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  max-width: 48rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: #cbd5e1; /* slate-300 */
+}
+
+.action-wrapper {
+  margin-top: 1.5rem;
+}
+
+/* Primary Button */
+.btn-primary {
+  display: inline-block;
+  border-radius: 9999px;
+  background-color: #7c3aed; /* violet-600 */
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #8b5cf6; /* violet-500 */
+}
+
+/* Feature Grid */
+.info-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.info-card {
+  border-radius: 1.5rem;
+  border: 1px solid #1e293b;
+  background-color: rgba(15, 23, 42, 0.6);
+  padding: 1.5rem;
+}
+
+.card-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Bullet Lists */
+.info-list {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.info-list li {
+  margin-bottom: 0.75rem;
+}
+
+.info-list li:last-child {
+  margin-bottom: 0;
+}
