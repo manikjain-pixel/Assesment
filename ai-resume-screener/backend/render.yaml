@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ai-resume-screener-api
+    runtime: python
+    rootDir: ai-resume-screener/backend
+    buildCommand: pip install --upgrade pip && pip install --prefer-binary -r requirements.txt
+    startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        value: sqlite:////tmp/ai_screener.db
+      - key: ENVIRONMENT
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: CORS_ORIGINS
+        value: https://ai-resume-screener-orpin.vercel.app,http://localhost:5173
