@@ -13,17 +13,52 @@ export function JobForm({ onSuccess }: JobFormProps) {
     const [minExperience, setMinExperience] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<{ title?: string; description?: string; minExperience?: string }>({});
     const { showToast } = useToast();
+
+    const validateForm = () => {
+        const nextErrors: { title?: string; description?: string; minExperience?: string } = {};
+
+        if (!title.trim()) {
+            nextErrors.title = 'Title is required.';
+        } else if (title.trim().length < 3) {
+            nextErrors.title = 'Title must be at least 3 characters long.';
+        }
+
+        if (!description.trim()) {
+            nextErrors.description = 'Description is required.';
+        } else if (description.trim().length < 10) {
+            nextErrors.description = 'Description must be at least 10 characters long.';
+        }
+
+        if (minExperience) {
+            const experienceValue = Number(minExperience);
+            if (Number.isNaN(experienceValue) || experienceValue < 0) {
+                nextErrors.minExperience = 'Minimum experience must be a non-negative number.';
+            }
+        }
+
+        setFieldErrors(nextErrors);
+        return Object.keys(nextErrors).length === 0;
+    };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        setLoading(true);
         setError(null);
+
+        if (!validateForm()) {
+            const firstError = Object.values(fieldErrors)[0] || 'Please fix the highlighted fields.';
+            setError(firstError);
+            showToast(firstError, 'error');
+            return;
+        }
+
+        setLoading(true);
 
         try {
             await api.createJob({
-                title,
-                description,
+                title: title.trim(),
+                description: description.trim(),
                 required_skills: requiredSkills || null,
                 min_experience: minExperience ? Number(minExperience) : null,
             });
@@ -31,6 +66,7 @@ export function JobForm({ onSuccess }: JobFormProps) {
             setDescription('');
             setRequiredSkills('');
             setMinExperience('');
+            setFieldErrors({});
             showToast('Job created successfully.', 'success');
             onSuccess?.();
         } catch (err) {
@@ -48,23 +84,35 @@ export function JobForm({ onSuccess }: JobFormProps) {
                 <label className="block text-sm font-medium text-slate-200">Title</label>
                 <input
                     value={title}
-                    onChange={(event) => setTitle(event.target.value)}
+                    onChange={(event) => {
+                        setTitle(event.target.value);
+                        if (fieldErrors.title) {
+                            setFieldErrors((current) => ({ ...current, title: undefined }));
+                        }
+                    }}
                     required
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-0"
+                    className={`w-full rounded-xl border bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-0 ${fieldErrors.title ? 'border-rose-500' : 'border-slate-700'}`}
                     placeholder="Senior Backend Engineer"
                 />
+                {fieldErrors.title ? <p className="text-sm text-rose-400">{fieldErrors.title}</p> : null}
             </div>
 
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-200">Description</label>
                 <textarea
                     value={description}
-                    onChange={(event) => setDescription(event.target.value)}
+                    onChange={(event) => {
+                        setDescription(event.target.value);
+                        if (fieldErrors.description) {
+                            setFieldErrors((current) => ({ ...current, description: undefined }));
+                        }
+                    }}
                     required
                     rows={4}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-0"
+                    className={`w-full rounded-xl border bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-0 ${fieldErrors.description ? 'border-rose-500' : 'border-slate-700'}`}
                     placeholder="Describe the role and expectations"
                 />
+                {fieldErrors.description ? <p className="text-sm text-rose-400">{fieldErrors.description}</p> : null}
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -84,10 +132,16 @@ export function JobForm({ onSuccess }: JobFormProps) {
                         type="number"
                         min="0"
                         value={minExperience}
-                        onChange={(event) => setMinExperience(event.target.value)}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-0"
+                        onChange={(event) => {
+                            setMinExperience(event.target.value);
+                            if (fieldErrors.minExperience) {
+                                setFieldErrors((current) => ({ ...current, minExperience: undefined }));
+                            }
+                        }}
+                        className={`w-full rounded-xl border bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-0 ${fieldErrors.minExperience ? 'border-rose-500' : 'border-slate-700'}`}
                         placeholder="3"
                     />
+                    {fieldErrors.minExperience ? <p className="text-sm text-rose-400">{fieldErrors.minExperience}</p> : null}
                 </div>
             </div>
 

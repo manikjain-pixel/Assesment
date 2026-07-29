@@ -44,6 +44,43 @@ export class ApiError extends Error {
   }
 }
 
+function formatValidationMessage(payload: unknown): string {
+  if (!payload || typeof payload !== 'object') {
+    return 'Request failed';
+  }
+
+  const details = (payload as { detail?: unknown }).detail;
+  if (Array.isArray(details)) {
+    const firstIssue = details[0];
+    if (firstIssue && typeof firstIssue === 'object') {
+      const issue = firstIssue as {
+        loc?: unknown[];
+        msg?: string;
+        type?: string;
+        ctx?: Record<string, unknown>;
+      };
+
+      const field = Array.isArray(issue.loc) ? issue.loc[issue.loc.length - 1] : undefined;
+      if (typeof issue.msg === 'string' && issue.msg.trim()) {
+        if (field && typeof field === 'string') {
+          return `${field.replace(/_/g, ' ')}: ${issue.msg}`;
+        }
+        return issue.msg;
+      }
+
+      if (issue.type === 'string_too_short' && issue.ctx?.min_length) {
+        return `Field must be at least ${issue.ctx.min_length} characters long.`;
+      }
+    }
+  }
+
+  if (typeof details === 'string' && details.trim()) {
+    return details;
+  }
+
+  return 'Request failed';
+}
+
 // Reusable wrapper around the Fetch API with JSON parsing and error normalization.
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {}, skipJsonParse = false } = options;
@@ -80,10 +117,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   if (!response.ok) {
-    const message =
-      (payload as { detail?: string } | undefined)?.detail ||
-      (payload as { message?: string } | undefined)?.message ||
-      'Request failed';
+    const message = formatValidationMessage(payload);
     throw new ApiError(message, response.status, payload);
   }
 
